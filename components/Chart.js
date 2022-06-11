@@ -4,6 +4,7 @@ import {
   ChartDot,
   ChartPath,
   ChartPathProvider,
+  ChartYLabel,
 } from "@rainbow-me/animated-charts";
 
 export const { width: SIZE } = Dimensions.get("window");
@@ -18,6 +19,18 @@ const Chart = ({
 }) => {
   console.log("Opening Bottom Sheet");
   const priceChangeColor = priceChangePercentage7d > 0 ? "#34C759" : "#FF3B30";
+
+  const formatUSD = (value) => {
+    "worklet";
+    if (value === "") {
+      return `$${currentPrice.toLocaleString("en-US", { currency: "USD" })}`;
+    }
+    const formattedValue = `$${parseFloat(value)
+      .toFixed(2)
+      .replace(/\d(?=(\d{3})+\.)/g, "$&,")}`;
+    return formattedValue;
+  };
+
   return (
     <ChartPathProvider
       data={{ points: sparkLine, smoothingStrategy: "bezier" }}
@@ -36,9 +49,10 @@ const Chart = ({
           </View>
 
           <View style={styles.lowerTitles}>
-            <Text style={styles.boldTitle}>
+            <ChartYLabel format={formatUSD} style={styles.boldTitle} />
+            {/* <Text style={styles.boldTitle}>
               ${currentPrice.toLocaleString("en-US", { currency: "USD" })}
-            </Text>
+            </Text> */}
             <Text style={[styles.title, { color: priceChangeColor }]}>
               {priceChangePercentage7d.toFixed(2)}%
             </Text>
@@ -46,8 +60,10 @@ const Chart = ({
         </View>
 
         {/* Chart */}
-        <ChartPath height={SIZE / 2} stroke="black" width={SIZE} />
-        <ChartDot style={{ backgroundColor: "blue" }} />
+        <View style={styles.chartLineWrapper}>
+          <ChartPath height={SIZE / 2} stroke="black" width={SIZE} />
+          <ChartDot style={{ backgroundColor: "black" }} />
+        </View>
       </View>
     </ChartPathProvider>
   );
@@ -55,9 +71,11 @@ const Chart = ({
 
 const styles = StyleSheet.create({
   chartWrapper: {
-    margin: 16,
+    marginVertical: 16,
   },
-  titleWrapper: {},
+  titleWrapper: {
+    marginHorizontal: 16,
+  },
   upperTitles: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -87,6 +105,9 @@ const styles = StyleSheet.create({
   boldTitle: {
     fontSize: 24,
     fontWeight: "bold",
+  },
+  chartLineWrapper: {
+    marginTop: 40,
   },
 });
 
