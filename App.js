@@ -1,11 +1,11 @@
-import { useRef, useMemo, useState } from "react";
+import { useRef, useMemo, useState, useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View, FlatList, SafeAreaView } from "react-native";
 import ListItem from "./components/ListItem";
 import Chart from "./components/Chart";
 
 import { SAMPLE_DATA } from "./assets/data/sampleData";
-
+import { getMarketData } from "./services/CryptoService";
 import {
   BottomSheetModal,
   BottomSheetModalProvider,
@@ -24,6 +24,16 @@ const ListHeader = () => {
 
 export default function App() {
   const [selectedCoinData, setSelectedCoinData] = useState(null);
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    const fetchMarketData = async () => {
+      const marketData = await getMarketData();
+      setData(marketData);
+    };
+
+    fetchMarketData();
+  }, []);
 
   const bottomSheetModalRef = useRef(null);
   const snapPoints = useMemo(() => ["45%"], []);
@@ -38,7 +48,7 @@ export default function App() {
       <SafeAreaView style={styles.container}>
         <FlatList
           keyExtractor={(item) => item.id}
-          data={SAMPLE_DATA}
+          data={data}
           renderItem={({ item }) => (
             <ListItem
               name={item.name}
